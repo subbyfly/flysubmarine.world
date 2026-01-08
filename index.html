@@ -1,13 +1,24 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>flysubmarine_site</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlySubmarine • The Vault</title>
+  <link rel="stylesheet" href="/src/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main class="hero">
+    <div id="submarine-canvas"></div>
+    <section class="vault">
+      <h1 class="glitch" data-text="Enter The Vault">Enter The Vault</h1>
+      <form id="email-form" action="/api/subscribe" method="POST">
+        <input type="email" name="email" placeholder="your@email.com" required />
+        <button type="submit" class="glow-btn">Unlock</button>
+      </form>
+      <p class="tagline">Exclusive music, lore, and behind‑the‑scenes content.</p>
+    </section>
+  </main>
+  <script type="module" src="/src/main.js"></script>
+</body>
 </html>
