@@ -1,29 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FlySubmarine • The Vault</title>
+  <title>Fly Submarine</title>
   <link rel="stylesheet" href="/src/style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
 </head>
-
 <body>
   <div id="canvas-container"></div>
-  <main class="hero">
-    <div class="glass">
-      <h1 class="glitch" data-text="Unlock the Vault">Unlock the Vault</h1>
-      <form id="vault-form">
-        <div class="input-group">
-          <input type="email" id="email" placeholder="your@email.com" required />
-          <button type="submit" class="glow-btn">Unlock</button>
-        </div>
-        <div id="status-message"></div>
-      </form>
-    </div>
+  
+  <main class="hero-container">
+    <h1 class="hero-title">FLY SUBMARINE</h1>
+    <p class="subtitle">AUTOMATED. DIVINE. GLITCH.</p>
+    
+    <form id="vault-form" class="vault-form-container">
+      <input type="email" id="email" class="vault-input" placeholder="ENTER COMM LINK" required />
+      <button type="submit" class="vault-btn">JOIN</button>
+    </form>
+    
+    <div id="status-message"></div>
   </main>
+
   <script type="module" src="/src/main.js"></script>
 </body>
-
 </html>
