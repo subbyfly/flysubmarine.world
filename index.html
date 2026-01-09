@@ -1,26 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fly Submarine</title>
-  <link rel="stylesheet" href="/src/style.css" />
-</head>
-<body>
-  <div id="canvas-container"></div>
-  
-  <main class="hero-container">
-    <h1 class="hero-title">FLY SUBMARINE</h1>
-    <p class="subtitle">AUTOMATED. DIVINE. GLITCH.</p>
-    
-    <form id="vault-form" class="vault-form-container">
-      <input type="email" id="email" class="vault-input" placeholder="ENTER COMM LINK" required />
-      <button type="submit" class="vault-btn">JOIN</button>
-    </form>
-    
-    <div id="status-message"></div>
-  </main>
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FLY SUBMARINE</title>
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div id="noise-overlay"></div>
+  <div id="scanline-overlay"></div>
+
+  <div id="cinematic-bg"></div>
+
+  <main id="app">
+    <header>
+      <h1 class="glitch" data-text="FLY SUBMARINE">FLY SUBMARINE</h1>
+      <p class="subtitle">EST. 2025 // THE DIVINE AUTOMATON</p>
+    </header>
+
+    <div class="content-wrapper">
+      <button id="enter-btn" class="cyber-button">
+        ENTER THE VAULT
+        <span class="glitch-effect">>></span>
+      </button>
+    </div>
+
+    <footer>
+      <p class="flicker">WAITING FOR SIGNAL...</p>
+    </footer>
+  </main>
   <script type="module" src="/src/main.js"></script>
 </body>
+
 </html>
