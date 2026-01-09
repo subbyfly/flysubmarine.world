@@ -6,113 +6,80 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 
 // --- SCENE SETUP ---
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x000000, 0.05); // Fade into void
+scene.fog = new THREE.FogExp2(0x000000, 0.05);
 
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position.set(0, 1, 6);
+camera.position.set(0, 0.5, 7);
 
-const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true }); // Antialias false for performance with bloom
+const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.toneMapping = THREE.ReinhardToneMapping;
 document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-// --- PROCEDURAL SUBMARINE ---
-const subGroup = new THREE.Group();
+const textureLoader = new THREE.TextureLoader();
 
-// Materials
-const wireMat = new THREE.MeshBasicMaterial({
-  color: 0x00f3ff,
-  wireframe: true,
+// --- 1. SEMDY LOGO (Background/Header) ---
+const logoGroup = new THREE.Group();
+const logoTexture = textureLoader.load('/semdy_logo.png');
+const logoMat = new THREE.MeshBasicMaterial({
+  map: logoTexture,
   transparent: true,
-  opacity: 0.8
-});
-const glassMat = new THREE.MeshBasicMaterial({
-  color: 0x00a8ff,
-  transparent: true,
-  opacity: 0.05,
-  side: THREE.DoubleSide,
+  opacity: 0.9,
   depthWrite: false
 });
+const logoGeo = new THREE.PlaneGeometry(3.5, 1.2);
+const logoMesh = new THREE.Mesh(logoGeo, logoMat);
+logoMesh.position.set(0, 2.5, -2); // Position high up
+logoGroup.add(logoMesh);
+scene.add(logoGroup); // Add separately so it doesn't bob with the sub
 
-// 1. Main Hull (Cylinder)
-const hullGeo = new THREE.CylinderGeometry(0.8, 0.8, 4.5, 16, 4, true);
-hullGeo.rotateZ(Math.PI / 2);
-const hull = new THREE.Mesh(hullGeo, wireMat);
-const hullInner = new THREE.Mesh(hullGeo, glassMat);
-subGroup.add(hull, hullInner);
+// --- 2. WIREFRAME SUBMARINE (Sprite) ---
+const subGroup = new THREE.Group();
+const subTexture = textureLoader.load('/submarine_sprite.png');
+subTexture.minFilter = THREE.LinearFilter;
+subTexture.magFilter = THREE.LinearFilter;
 
-// 2. Nose Cone (Sphere)
-const noseGeo = new THREE.SphereGeometry(0.8, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2);
-noseGeo.rotateZ(-Math.PI / 2);
-noseGeo.translate(2.25, 0, 0); // Position at front
-const nose = new THREE.Mesh(noseGeo, wireMat);
-subGroup.add(nose);
+const subMat = new THREE.MeshBasicMaterial({
+  map: subTexture,
+  transparent: true,
+  opacity: 1.0,
+  side: THREE.DoubleSide
+});
 
-// 3. Tail Cone (Cylinder tapered)
-const tailGeo = new THREE.CylinderGeometry(0.8, 0.1, 1.5, 16, 2, true);
-tailGeo.rotateZ(Math.PI / 2);
-tailGeo.translate(-3, 0, 0);
-const tail = new THREE.Mesh(tailGeo, wireMat);
-subGroup.add(tail);
+// Create 2 planes to give it volume/pseudo-3D feel
+const subGeo = new THREE.PlaneGeometry(6, 4); // Adjusted scale
+const subMesh = new THREE.Mesh(subGeo, subMat);
+subGroup.add(subMesh);
 
-// 4. Conning Tower (Sail) - Box
-const towerGeo = new THREE.BoxGeometry(1.2, 0.8, 1.8, 4, 2, 4);
-towerGeo.translate(0.5, 0.9, 0);
-const tower = new THREE.Mesh(towerGeo, wireMat);
-const towerInner = new THREE.Mesh(towerGeo, glassMat);
-subGroup.add(tower, towerInner);
+// Add a faint glow copy slightly behind
+const glowMesh = new THREE.Mesh(subGeo, new THREE.MeshBasicMaterial({
+  map: subTexture,
+  transparent: true,
+  opacity: 0.3,
+  color: 0x00ffff,
+  blending: THREE.AdditiveBlending
+}));
+glowMesh.position.z = -0.1;
+glowMesh.scale.multiplyScalar(1.05);
+subGroup.add(glowMesh);
 
-// 5. Periscopes / Antenna
-const scopeGeo = new THREE.CylinderGeometry(0.05, 0.05, 1.5, 8);
-scopeGeo.translate(0.8, 1.6, 0.2);
-const scope = new THREE.Mesh(scopeGeo, wireMat);
-subGroup.add(scope);
-
-const antennaGeo = new THREE.CylinderGeometry(0.02, 0.02, 2.0, 8);
-antennaGeo.translate(0.4, 1.8, -0.4);
-const antenna = new THREE.Mesh(antennaGeo, wireMat);
-subGroup.add(antenna);
-
-
-// 6. Rear Fins
-const finGeo = new THREE.BoxGeometry(1.2, 0.05, 1.2);
-const finH = new THREE.Mesh(finGeo, wireMat);
-finH.position.set(-3.2, 0, 0);
-subGroup.add(finH);
-
-const finV = new THREE.Mesh(finGeo, wireMat);
-finV.rotation.x = Math.PI / 2;
-finV.position.set(-3.2, 0, 0);
-subGroup.add(finV);
-
-// 7. Propeller
-const propGroup = new THREE.Group();
-const propBladeGeo = new THREE.BoxGeometry(0.1, 1.4, 0.2);
-const blade1 = new THREE.Mesh(propBladeGeo, wireMat);
-const blade2 = new THREE.Mesh(propBladeGeo, wireMat);
-blade2.rotation.x = Math.PI / 2;
-propGroup.add(blade1, blade2);
-propGroup.position.set(-3.8, 0, 0);
-subGroup.add(propGroup);
-
+subGroup.position.set(0, -0.5, 0);
 scene.add(subGroup);
 
-// --- PARTICLES (Digital Dust) ---
+// --- 3. PARTICLES ---
 const particlesGeo = new THREE.BufferGeometry();
-const particlesCount = 1500;
+const particlesCount = 800;
 const posArray = new Float32Array(particlesCount * 3);
-
 for (let i = 0; i < particlesCount * 3; i++) {
-  posArray[i] = (Math.random() - 0.5) * 20; // Spread wide
+  posArray[i] = (Math.random() - 0.5) * 18;
 }
-
 particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 const particlesMat = new THREE.PointsMaterial({
   size: 0.03,
   color: 0x00f3ff,
   transparent: true,
-  opacity: 0.5,
+  opacity: 0.6,
   blending: THREE.AdditiveBlending
 });
 const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
@@ -122,60 +89,47 @@ scene.add(particlesMesh);
 const composer = new EffectComposer(renderer);
 const renderPass = new RenderPass(scene, camera);
 composer.addPass(renderPass);
-
 const bloomPass = new UnrealBloomPass(
   new THREE.Vector2(window.innerWidth, window.innerHeight),
-  1.2, // Strength
-  0.5, // Radius
-  0.1  // Threshold
+  1.5, // intensity
+  0.5, // radius
+  0.1  // threshold
 );
 composer.addPass(bloomPass);
 
-// --- ANIMATION & INTERACTION ---
+// --- ANIMATION ---
+const clock = new THREE.Clock();
 let mouseX = 0;
 let mouseY = 0;
 
-// Smooth interaction targets
-let targetRotX = 0;
-let targetRotY = 0;
-
-const windowHalfX = window.innerWidth / 2;
-const windowHalfY = window.innerHeight / 2;
-
-document.addEventListener('mousemove', (event) => {
-  mouseX = (event.clientX - windowHalfX) * 0.001;
-  mouseY = (event.clientY - windowHalfY) * 0.001;
+window.addEventListener('mousemove', (e) => {
+  mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+  mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
 });
-
-const clock = new THREE.Clock();
 
 function animate() {
   requestAnimationFrame(animate);
-  const elapsedTime = clock.getElapsedTime();
+  const time = clock.getElapsedTime();
 
-  // 1. Submarine Idle Float (Bobbing)
-  subGroup.position.y = Math.sin(elapsedTime * 0.5) * 0.2;
-  subGroup.rotation.z = Math.sin(elapsedTime * 0.3) * 0.05;
+  // Bobbing
+  subGroup.position.y = -0.5 + Math.sin(time * 0.8) * 0.15;
 
-  // 2. Propeller Spin
-  propGroup.rotation.x += 0.15;
+  // Mouse Parallax / Tilt
+  const targetY = mouseX * 0.3;
+  const targetX = -mouseY * 0.2;
 
-  // 3. Mouse Interaction (Lerp for smoothness)
-  targetRotY = mouseX * 2; // Look left/right
-  targetRotX = mouseY * 1.5; // Look up/down
+  subGroup.rotation.y += (targetY - subGroup.rotation.y) * 0.05;
+  subGroup.rotation.x += (targetX - subGroup.rotation.x) * 0.05;
 
-  subGroup.rotation.y += (targetRotY - subGroup.rotation.y) * 0.05;
-  subGroup.rotation.x += (targetRotX - subGroup.rotation.x) * 0.05;
+  // Sprite always faces slightly towards camera but tilts
+  // No full rotation since it is a 2D sprite
 
-  // 4. Particles visual drift
-  particlesMesh.rotation.y = elapsedTime * 0.02;
-  particlesMesh.rotation.x = mouseY * 0.2;
+  // Particles Drift
+  particlesMesh.rotation.y = time * 0.04;
 
-  // Render using composer for bloom
   composer.render();
 }
 
-// Handle window resize
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
