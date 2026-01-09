@@ -9,7 +9,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x000000, 0.05);
 
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position.set(0, 0, 8); // Moved camera back slightly
+camera.position.set(0, 0, 8);
 
 const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -30,7 +30,7 @@ const logoMat = new THREE.MeshBasicMaterial({
 });
 const logoGeo = new THREE.PlaneGeometry(3.5, 1.2);
 const logoMesh = new THREE.Mesh(logoGeo, logoMat);
-logoMesh.position.set(0, 3.2, -3); // Higher up
+logoMesh.position.set(0, 3.2, -3);
 logoGroup.add(logoMesh);
 scene.add(logoGroup);
 
@@ -47,7 +47,7 @@ const subMat = new THREE.MeshBasicMaterial({
   side: THREE.DoubleSide
 });
 
-const subGeo = new THREE.PlaneGeometry(7, 4.5); // Larger sub
+const subGeo = new THREE.PlaneGeometry(7, 4.5);
 const subMesh = new THREE.Mesh(subGeo, subMat);
 subGroup.add(subMesh);
 
@@ -66,20 +66,44 @@ subGroup.add(glowMesh);
 subGroup.position.set(0, 0.5, -1);
 scene.add(subGroup);
 
-// --- 3. POLAR BEAR (Standing) ---
+// --- 3. BOSS BEAR (Standing Left) ---
 const bearGroup = new THREE.Group();
 const bearTexture = textureLoader.load('/polar_bear.png');
+// Force high quality texture settings
+bearTexture.generateMipmaps = false;
+bearTexture.magFilter = THREE.LinearFilter;
+bearTexture.minFilter = THREE.LinearFilter;
+
 const bearMat = new THREE.MeshBasicMaterial({
   map: bearTexture,
   transparent: true,
   opacity: 1.0,
   side: THREE.DoubleSide
 });
-const bearGeo = new THREE.PlaneGeometry(3.5, 5.5); // Human scale relative to sub
+const bearGeo = new THREE.PlaneGeometry(4.2, 5.5); // Slightly wider fit
 const bearMesh = new THREE.Mesh(bearGeo, bearMat);
 bearGroup.add(bearMesh);
-bearGroup.position.set(2, -2.5, 1); // Corner standing position
+bearGroup.position.set(-2.2, -2.5, 0.5); // Moved to Left
 scene.add(bearGroup);
+
+// --- 4. SPACE PIGEON (Floating Right) ---
+const pigeonGroup = new THREE.Group();
+const pigeonTexture = textureLoader.load('/pigeon.png');
+pigeonTexture.generateMipmaps = false;
+pigeonTexture.magFilter = THREE.LinearFilter;
+pigeonTexture.minFilter = THREE.LinearFilter;
+
+const pigeonMat = new THREE.MeshBasicMaterial({
+  map: pigeonTexture,
+  transparent: true,
+  opacity: 1.0,
+  side: THREE.DoubleSide
+});
+const pigeonGeo = new THREE.PlaneGeometry(1.5, 1.5);
+const pigeonMesh = new THREE.Mesh(pigeonGeo, pigeonMat);
+pigeonGroup.add(pigeonMesh);
+pigeonGroup.position.set(2.5, -1.0, 1.5); // Floating on right
+scene.add(pigeonGroup);
 
 
 // --- PARTICLES ---
@@ -125,18 +149,26 @@ function animate() {
   const time = clock.getElapsedTime();
 
   // Bobbing Submarine
-  subGroup.position.y = 0.5 + Math.sin(time * 0.6) * 0.1;
+  subGroup.position.y = 0.5 + Math.sin(time * 0.6) * 0.15;
 
-  // Bear Breathing (subtle scale)
-  bearGroup.scale.y = 1 + Math.sin(time * 2) * 0.005;
+  // Bear Breathing
+  bearGroup.scale.y = 1 + Math.sin(time * 1.5) * 0.005;
 
-  // Mouse Parallax
+  // Pigeon Floating
+  pigeonGroup.position.y = -1.0 + Math.sin(time * 2.5 + 2) * 0.1;
+  pigeonGroup.rotation.z = Math.sin(time * 0.5) * 0.05;
+
+  // Mouse Parallax & Look
   const targetY = mouseX * 0.2;
   const targetX = -mouseY * 0.1;
 
   subGroup.rotation.y += (targetY - subGroup.rotation.y) * 0.05;
   logoGroup.rotation.y += (targetY * 0.5 - logoGroup.rotation.y) * 0.05;
-  bearGroup.rotation.y += (targetY * 0.2 - bearGroup.rotation.y) * 0.05;
+
+  // Characters slightly face mouse
+  bearGroup.rotation.y += (targetY * 0.1 - bearGroup.rotation.y) * 0.05;
+  pigeonGroup.rotation.y += (targetY * 0.3 - pigeonGroup.rotation.y) * 0.05;
+  pigeonGroup.rotation.x += (targetX * 0.2 - pigeonGroup.rotation.x) * 0.05;
 
   particlesMesh.rotation.y = time * 0.02;
 
