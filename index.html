@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fly Submarine | THE VAULT</title>
-    <link rel="stylesheet" href="/src/style.css" />
-    <style>body { margin: 0; overflow: hidden; background: #000; }</style>
-  </head>
-  <body>
-    <div id="canvas-container"></div>
-    <div class="overlay">
-      <header>
-        <h1 class="glitch" data-text="FLY SUBMARINE">FLY SUBMARINE</h1>
-        <p class="subtitle">ENTER THE VAULT</p>
-      </header>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlySubmarine • The Vault</title>
+  <link rel="stylesheet" href="/src/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+</head>
+
+<body>
+  <div id="canvas-container"></div>
+  <main class="hero">
+    <div class="glass">
+      <h1 class="glitch" data-text="Unlock the Vault">Unlock the Vault</h1>
       <form id="vault-form">
         <div class="input-group">
-          <input type="email" id="email" placeholder="ACCESS_CODE // EMAIL" required />
-          <button type="submit">INITIATE</button>
+          <input type="email" id="email" placeholder="your@email.com" required />
+          <button type="submit" class="glow-btn">Unlock</button>
         </div>
         <div id="status-message"></div>
       </form>
     </div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+  </main>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
 </html>
