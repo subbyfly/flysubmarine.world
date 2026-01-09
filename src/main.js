@@ -9,7 +9,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x000000, 0.05);
 
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position.set(0, 0.5, 7);
+camera.position.set(0, 0, 8); // Moved camera back slightly
 
 const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -30,11 +30,11 @@ const logoMat = new THREE.MeshBasicMaterial({
 });
 const logoGeo = new THREE.PlaneGeometry(3.5, 1.2);
 const logoMesh = new THREE.Mesh(logoGeo, logoMat);
-logoMesh.position.set(0, 2.5, -2); // Position high up
+logoMesh.position.set(0, 3.2, -3); // Higher up
 logoGroup.add(logoMesh);
-scene.add(logoGroup); // Add separately so it doesn't bob with the sub
+scene.add(logoGroup);
 
-// --- 2. WIREFRAME SUBMARINE (Sprite) ---
+// --- 2. WIREFRAME SUBMARINE (Floating) ---
 const subGroup = new THREE.Group();
 const subTexture = textureLoader.load('/submarine_sprite.png');
 subTexture.minFilter = THREE.LinearFilter;
@@ -47,12 +47,11 @@ const subMat = new THREE.MeshBasicMaterial({
   side: THREE.DoubleSide
 });
 
-// Create 2 planes to give it volume/pseudo-3D feel
-const subGeo = new THREE.PlaneGeometry(6, 4); // Adjusted scale
+const subGeo = new THREE.PlaneGeometry(7, 4.5); // Larger sub
 const subMesh = new THREE.Mesh(subGeo, subMat);
 subGroup.add(subMesh);
 
-// Add a faint glow copy slightly behind
+// Glow copy
 const glowMesh = new THREE.Mesh(subGeo, new THREE.MeshBasicMaterial({
   map: subTexture,
   transparent: true,
@@ -64,15 +63,31 @@ glowMesh.position.z = -0.1;
 glowMesh.scale.multiplyScalar(1.05);
 subGroup.add(glowMesh);
 
-subGroup.position.set(0, -0.5, 0);
+subGroup.position.set(0, 0.5, -1);
 scene.add(subGroup);
 
-// --- 3. PARTICLES ---
+// --- 3. POLAR BEAR (Standing) ---
+const bearGroup = new THREE.Group();
+const bearTexture = textureLoader.load('/polar_bear.png');
+const bearMat = new THREE.MeshBasicMaterial({
+  map: bearTexture,
+  transparent: true,
+  opacity: 1.0,
+  side: THREE.DoubleSide
+});
+const bearGeo = new THREE.PlaneGeometry(3.5, 5.5); // Human scale relative to sub
+const bearMesh = new THREE.Mesh(bearGeo, bearMat);
+bearGroup.add(bearMesh);
+bearGroup.position.set(2, -2.5, 1); // Corner standing position
+scene.add(bearGroup);
+
+
+// --- PARTICLES ---
 const particlesGeo = new THREE.BufferGeometry();
 const particlesCount = 800;
 const posArray = new Float32Array(particlesCount * 3);
 for (let i = 0; i < particlesCount * 3; i++) {
-  posArray[i] = (Math.random() - 0.5) * 18;
+  posArray[i] = (Math.random() - 0.5) * 20;
 }
 particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 const particlesMat = new THREE.PointsMaterial({
@@ -85,15 +100,13 @@ const particlesMat = new THREE.PointsMaterial({
 const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
 scene.add(particlesMesh);
 
-// --- POST PROCESSING (BLOOM) ---
+// --- POST PROCESSING ---
 const composer = new EffectComposer(renderer);
 const renderPass = new RenderPass(scene, camera);
 composer.addPass(renderPass);
 const bloomPass = new UnrealBloomPass(
   new THREE.Vector2(window.innerWidth, window.innerHeight),
-  1.5, // intensity
-  0.5, // radius
-  0.1  // threshold
+  1.2, 0.4, 0.1
 );
 composer.addPass(bloomPass);
 
@@ -111,21 +124,21 @@ function animate() {
   requestAnimationFrame(animate);
   const time = clock.getElapsedTime();
 
-  // Bobbing
-  subGroup.position.y = -0.5 + Math.sin(time * 0.8) * 0.15;
+  // Bobbing Submarine
+  subGroup.position.y = 0.5 + Math.sin(time * 0.6) * 0.1;
 
-  // Mouse Parallax / Tilt
-  const targetY = mouseX * 0.3;
-  const targetX = -mouseY * 0.2;
+  // Bear Breathing (subtle scale)
+  bearGroup.scale.y = 1 + Math.sin(time * 2) * 0.005;
+
+  // Mouse Parallax
+  const targetY = mouseX * 0.2;
+  const targetX = -mouseY * 0.1;
 
   subGroup.rotation.y += (targetY - subGroup.rotation.y) * 0.05;
-  subGroup.rotation.x += (targetX - subGroup.rotation.x) * 0.05;
+  logoGroup.rotation.y += (targetY * 0.5 - logoGroup.rotation.y) * 0.05;
+  bearGroup.rotation.y += (targetY * 0.2 - bearGroup.rotation.y) * 0.05;
 
-  // Sprite always faces slightly towards camera but tilts
-  // No full rotation since it is a 2D sprite
-
-  // Particles Drift
-  particlesMesh.rotation.y = time * 0.04;
+  particlesMesh.rotation.y = time * 0.02;
 
   composer.render();
 }
