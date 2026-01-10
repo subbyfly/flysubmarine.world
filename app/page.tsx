@@ -34,10 +34,10 @@ export default function Home() {
             {/* 1. Cinematic Background (Fixed) */}
             <div className="fixed inset-0 z-0">
                 <div
-                    className="absolute inset-0 bg-cover bg-center opacity-60 mix-blend-overlay"
-                    style={{ backgroundImage: "url('/hero_bg.jpg')" }}
+                    className="absolute inset-0 bg-cover bg-center opacity-80"
+                    style={{ backgroundImage: "url('/hero_bg.jpg?v=2')" }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/80 via-transparent to-[#050505]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/90 via-[#050505]/40 to-[#050505]" />
 
                 {/* Divine Glitch Overlay */}
                 <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
@@ -62,9 +62,11 @@ export default function Home() {
 
                 {/* Center: Brand (on top) */}
                 <div className="absolute left-1/2 -translate-x-1/2 top-8 text-center pointer-events-auto">
-                    <h1 className="text-4xl font-black tracking-tighter sm:text-6xl text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
-                        FLY SUBMARINE
-                    </h1>
+                    <img
+                        src="/logo_flat.jpg?v=2"
+                        alt="FLY SUBMARINE"
+                        className="h-16 md:h-24 w-auto mix-blend-screen opacity-90 hover:opacity-100 transition-opacity"
+                    />
                     <p className="text-xs font-mono tracking-[0.3em] text-neon-green mt-2 animate-pulse">
                         THE DIVINE AUTOMATON
                     </p>
@@ -88,7 +90,7 @@ export default function Home() {
                     {/* Animated Street Pigeon Tooltip */}
                     <div className="group relative">
                         <img
-                            src="/pigeon.png"
+                            src="/pigeon.png?v=2"
                             alt="Space Pigeon"
                             className="w-16 h-16 object-contain animate-float drop-shadow-[0_0_15px_rgba(0,255,136,0.3)]"
                         />
@@ -211,6 +213,7 @@ export default function Home() {
 
                     <p className="text-xl font-light text-white/80 mb-12 max-w-2xl mx-auto">
                         The Sanctuary Program. A place to rest during the ascent.
+                        window.location.href = "https://instagram.com/semdy__"; // Redirect to @semdy__nt.
                         Enter your contact below for private drops and coordinates.
                     </p>
 
@@ -289,7 +292,7 @@ export default function Home() {
 
             {/* FOOTER */}
             <footer className="bg-black py-12 border-t border-white/5 relative z-10 text-center text-white/30 text-xs font-mono">
-                <p>© FLY SUBMARINE LLC 2026 // ALL SYSTEMS NOMINAL</p>
+                <p>© FLY SUBMARINE LLC 2026 // ALL SYSTEMS NOMINAL // v2.1</p>
             </footer>
 
         </main>
